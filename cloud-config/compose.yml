@@ -1,12 +1,9 @@
 
-version: '3'
 services:
-  cloud-config-container:
-    image: selimhorri/cloud-config-ecommerce-boot:0.1.0
+  cloud-config:
+    build: .
     ports:
       - 9296:9296
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
 
 
 

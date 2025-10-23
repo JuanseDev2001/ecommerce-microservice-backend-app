@@ -1,70 +1,49 @@
 
-version: '3'
 services:
-  zipkin-container:
+  zipkin:
     image: openzipkin/zipkin
     ports:
       - 9411:9411
-  service-discovery-container:
-    image: selimhorri/service-discovery-ecommerce-boot:0.1.0
+  service-discovery:
+    build: ./service-discovery
     ports:
       - 8761:8761
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  cloud-config-container:
-    image: selimhorri/cloud-config-ecommerce-boot:0.1.0
+  cloud-config:
+    build: ./cloud-config
     ports:
       - 9296:9296
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  api-gateway-container:
-    image: selimhorri/api-gateway-ecommerce-boot:0.1.0
+  api-gateway:
+    build: ./api-gateway
     ports:
       - 8080:8080
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  proxy-client-container:
-    image: selimhorri/proxy-client-ecommerce-boot:0.1.0
+  proxy-client:
+    build: ./proxy-client
     ports:
       - 8900:8900
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  order-service-container:
-    image: selimhorri/order-service-ecommerce-boot:0.1.0
+  order-service:
+    build: ./order-service
     ports:
       - 8300:8300
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  payment-service-container:
-    image: selimhorri/payment-service-ecommerce-boot:0.1.0
+  payment-service:
+    build: ./payment-service
     ports:
       - 8400:8400
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  product-service-container:
-    image: selimhorri/product-service-ecommerce-boot:0.1.0
+  product-service:
+    build: ./product-service
     ports:
       - 8500:8500
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  shipping-service-container:
-    image: selimhorri/shipping-service-ecommerce-boot:0.1.0
+  shipping-service:
+    build: ./shipping-service
     ports:
       - 8600:8600
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  user-service-container:
-    image: selimhorri/user-service-ecommerce-boot:0.1.0
+  user-service:
+    build: ./user-service
     ports:
       - 8700:8700
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-  favourite-service-container:
-    image: selimhorri/favourite-service-ecommerce-boot:0.1.0
+  favourite-service:
+    build: ./favourite-service
     ports:
       - 8800:8800
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
 
 
 
