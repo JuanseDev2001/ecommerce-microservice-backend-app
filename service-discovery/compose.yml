@@ -1,9 +1,11 @@
 
 services:
-  service-discovery:
-    build: .
+  service-discovery-container:
+    image: selimhorri/service-discovery-ecommerce-boot:0.1.0
     ports:
       - 8761:8761
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
 
 

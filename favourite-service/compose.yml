@@ -1,9 +1,10 @@
 
 services:
-  favourite-service:
-    build: .
+  favourite-service-container:
+    image: selimhorri/favourite-service-ecommerce-boot:0.1.0
     ports:
       - 8800:8800
-
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
 
