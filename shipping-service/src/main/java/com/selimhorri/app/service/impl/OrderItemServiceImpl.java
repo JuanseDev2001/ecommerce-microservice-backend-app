@@ -49,8 +49,8 @@ public class OrderItemServiceImpl implements OrderItemService {
 	
 	@Override
 	public OrderItemDto findById(final OrderItemId orderItemId) {
-		log.info("*** OrderItemDto, service; fetch orderItem by id *");
-		return this.orderItemRepository.findById(null)
+		log.info("*** OrderItemDto, service; fetch orderItem by id *", orderItemId);
+		return this.orderItemRepository.findById(orderItemId)
 				.map(OrderItemMappingHelper::map)
 				.map(o -> {
 					o.setProductDto(this.restTemplate.getForObject(AppConstant.DiscoveredDomainsApi
@@ -59,7 +59,10 @@ public class OrderItemServiceImpl implements OrderItemService {
 							.ORDER_SERVICE_API_URL + "/" + o.getOrderDto().getOrderId(), OrderDto.class));
 					return o;
 				})
-				.orElseThrow(() -> new OrderItemNotFoundException(String.format("OrderItem with id: %s not found", orderItemId)));
+				.orElseThrow(() -> {
+			       log.warn("OrderItem not found for id: {}", orderItemId);
+			       throw new OrderItemNotFoundException(String.format("OrderItem with id: %s not found", orderItemId));
+		       });
 	}
 	
 	@Override
