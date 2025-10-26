@@ -4,6 +4,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -148,7 +150,7 @@ public class ShippingServiceE2ETest {
     }
 
     @Test
-    void testGetAllOrderItems() {
+    void testGetAllOrderItems() throws Exception {
         int categoryId = createCategory();
         int productId = createProduct(categoryId);
         int orderId = createOrder();
@@ -161,33 +163,59 @@ public class ShippingServiceE2ETest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("collection"));
+
+        // Robust check: parse JSON and look for the numeric orderId either as a top-level
+        // field or nested under an "order" object. This avoids brittle string matching
+        // that can fail due to whitespace or formatting differences.
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+        boolean found = false;
+        JsonNode arrayNode = root.has("collection") ? root.get("collection") : root;
+        if (arrayNode != null && arrayNode.isArray()) {
+            for (JsonNode item : arrayNode) {
+                if (item.path("orderId").asInt(-1) == orderId || item.path("order").path("orderId").asInt(-1) == orderId) {
+                    found = true;
+                    break;
+                }
+            }
+        } else if (root.isObject()) {
+            if (root.path("orderId").asInt(-1) == orderId || root.path("order").path("orderId").asInt(-1) == orderId) {
+                found = true;
+            }
+        }
+        assertTrue(found, "Expected orderId " + orderId + " not found in response: " + response.getBody());
     }
 
     @Test
-    void testGetOrderItemById() {
-        // Create product via product service E2E logic
+    void testGetOrderItemById() throws Exception {
         int categoryId = createCategory();
         int productId = createProduct(categoryId);
-        // Create order via order service E2E logic
         int orderId = createOrder();
-        // Now create the shipping order item
         String orderItemJson = buildOrderItemJson(orderId, productId, 2);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(orderItemJson, headers);
         ResponseEntity<String> createResponse = restTemplate.postForEntity(shippingServiceUrl, request, String.class);
-        System.out.println("[DEBUG] Create OrderItem Response: Status=" + createResponse.getStatusCode() + ", Body=" + createResponse.getBody());
         assertTrue(createResponse.getStatusCode().is2xxSuccessful());
+
         // Test get by id
-        ResponseEntity<String> getResponse = restTemplate.getForEntity(shippingServiceUrl + "/" + orderId + "/" + productId, String.class);
-        System.out.println("[DEBUG] Get OrderItemById Response: Status=" + getResponse.getStatusCode() + ", Body=" + getResponse.getBody());
+        ResponseEntity<String> getResponse = restTemplate.getForEntity(shippingServiceUrl + "/" + productId + "/" + orderId, String.class);
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
         assertTrue(getResponse.getBody().contains("orderId"));
         assertTrue(getResponse.getBody().contains("productId"));
-        // Clean up: delete order item, order, and product
-        restTemplate.exchange(shippingServiceUrl + "/" + orderId + "/" + productId, HttpMethod.DELETE, null, String.class);
-        restTemplate.delete(orderServiceUrl + "/" + orderId);
-        restTemplate.delete(productServiceUrl + "/" + productId);
+
+        // Instead of comparing raw JSON strings (which is brittle because the
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode created = mapper.readTree(createResponse.getBody());
+        JsonNode fetched = mapper.readTree(getResponse.getBody());
+
+        assertEquals(created.path("productId").asInt(-1), fetched.path("productId").asInt(-1), "productId should match");
+        assertEquals(created.path("orderId").asInt(-1), fetched.path("orderId").asInt(-1), "orderId should match");
+        assertEquals(created.path("orderedQuantity").asInt(-1), fetched.path("orderedQuantity").asInt(-1), "orderedQuantity should match");
+
+        // Also check nested ids (defensive)
+        assertEquals(created.path("product").path("productId").asInt(-1), fetched.path("product").path("productId").asInt(-1), "nested product.productId should match");
+        assertEquals(created.path("order").path("orderId").asInt(-1), fetched.path("order").path("orderId").asInt(-1), "nested order.orderId should match");
     }
 
     @Test
@@ -201,6 +229,7 @@ public class ShippingServiceE2ETest {
         HttpEntity<String> request = new HttpEntity<>(orderItemJson, headers);
         ResponseEntity<String> createResponse = restTemplate.postForEntity(shippingServiceUrl, request, String.class);
         assertTrue(createResponse.getStatusCode().is2xxSuccessful());
+
         // Update order item (change quantity)
         String updateJson = buildOrderItemJson(orderId, productId, 10);
         HttpEntity<String> updateRequest = new HttpEntity<>(updateJson, headers);
@@ -211,12 +240,10 @@ public class ShippingServiceE2ETest {
 
     @Test
     void testDeleteOrderItem() {
-        // Create product via product service E2E logic
         int categoryId = createCategory();
         int productId = createProduct(categoryId);
-        // Create order via order service E2E logic
         int orderId = createOrder();
-        // Now create the shipping order item
+
         String orderItemJson = buildOrderItemJson(orderId, productId, 7);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -224,10 +251,12 @@ public class ShippingServiceE2ETest {
         ResponseEntity<String> createResponse = restTemplate.postForEntity(shippingServiceUrl, request, String.class);
         System.out.println("[DEBUG] Create OrderItem Response: Status=" + createResponse.getStatusCode() + ", Body=" + createResponse.getBody());
         assertTrue(createResponse.getStatusCode().is2xxSuccessful());
+
         // Test delete order item
-        ResponseEntity<String> deleteResponse = restTemplate.exchange(shippingServiceUrl + "/" + orderId + "/" + productId, HttpMethod.DELETE, null, String.class);
+        ResponseEntity<String> deleteResponse = restTemplate.exchange(shippingServiceUrl + "/" + productId + "/" + orderId, HttpMethod.DELETE, null, String.class);
         System.out.println("[DEBUG] Delete OrderItem Response: Status=" + deleteResponse.getStatusCode() + ", Body=" + deleteResponse.getBody());
         assertTrue(deleteResponse.getStatusCode().is2xxSuccessful());
+        
         // Clean up: delete order and product
         restTemplate.delete(orderServiceUrl + "/" + orderId);
         restTemplate.delete(productServiceUrl + "/" + productId);
