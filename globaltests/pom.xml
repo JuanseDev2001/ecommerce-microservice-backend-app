@@ -8,9 +8,9 @@
         <version>0.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>global-tests</artifactId>
+    <artifactId>globaltests</artifactId>
     <packaging>jar</packaging>
-    <name>global-tests</name>
+    <name>globaltests</name>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
