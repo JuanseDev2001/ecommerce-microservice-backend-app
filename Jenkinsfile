@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image 'maven:3.8.7-openjdk-17' } }
+    agent { docker { image 'maven:3.8.7-openjdk-17-slim' } }
     environment {
         DEV_BRANCH = 'dev'
         STAGE_BRANCH = 'stage'
