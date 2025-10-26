@@ -10,7 +10,6 @@ class CloudConfigApplicationUnitTests {
 
     @Test
     void testMainMethodRuns() {
-        // Just check that main does not throw
         assertDoesNotThrow(() -> CloudConfigApplication.main(new String[]{}));
     }
 
