@@ -1,5 +1,5 @@
 pipeline {
-    
+
     agent none
 
     environment {
@@ -23,7 +23,6 @@ pipeline {
                     ]
                     for (svc in services) {
                         dir(svc) {
-                            // IMPORTANTE: Usar 'sh' (Shell de Linux), no 'bat' (Windows)
                             sh 'mvn clean verify'
                         }
                     }
@@ -31,12 +30,32 @@ pipeline {
             }
             post {
                 always {
-                    // Los paths de JUnit también funcionan con la ruta Linux del contenedor
-                    junit '**/target/surefire-reports/*.xml'
-                    junit '**/target/failsafe-reports/*.xml'
+                    script {
+                        junit '**/target/surefire-reports/*.xml'
+                        junit '**/target/failsafe-reports/*.xml'
+                    }
                 }
             }
         }
-        // ... (El resto de tus etapas)
+        stage('Global Tests (PR dev a stage)') {
+            when {
+                allOf {
+                    changeRequest();
+                    expression { env.CHANGE_SOURCE == env.DEV_BRANCH && env.CHANGE_TARGET == env.STAGE_BRANCH }
+                }
+            }
+            steps {
+                dir('globaltests') {
+                    sh 'mvn clean verify'
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit 'globaltests/target/surefire-reports/*.xml'
+                    }
+                }
+            }
+        }
     }
 }
