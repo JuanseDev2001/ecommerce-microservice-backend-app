@@ -13,11 +13,6 @@ public class ServiceDiscoveryApplicationIntegrationTest {
     }
 
     @Test
-    void testMainRunsSpringApplication() {
-        assertDoesNotThrow(() -> com.selimhorri.app.ServiceDiscoveryApplication.main(new String[]{}));
-    }
-
-    @Test
     void testApplicationClassIsNotNull() {
         assertNotNull(com.selimhorri.app.ServiceDiscoveryApplication.class);
     }

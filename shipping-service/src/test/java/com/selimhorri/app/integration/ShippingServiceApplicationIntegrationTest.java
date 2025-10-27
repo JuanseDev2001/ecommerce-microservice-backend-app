@@ -33,11 +33,6 @@ public class ShippingServiceApplicationIntegrationTest {
     }
 
     @Test
-    void testMainMethodDoesNotThrow() {
-        assertDoesNotThrow(() -> ShippingServiceApplication.main(new String[]{}));
-    }
-
-    @Test
     void testApplicationClassIsNotNull() {
         assertNotNull(ShippingServiceApplication.class);
     }

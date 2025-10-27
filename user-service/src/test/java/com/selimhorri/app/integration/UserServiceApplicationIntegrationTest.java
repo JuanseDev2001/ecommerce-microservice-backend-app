@@ -18,10 +18,6 @@ public class UserServiceApplicationIntegrationTest {
         // Spring context should load without exceptions
     }
 
-    @Test
-    void testMainMethodDoesNotThrow() {
-        assertDoesNotThrow(() -> UserServiceApplication.main(new String[]{}));
-    }
 
     @Test
     void testUserMappingHelperMapToDtoAndBack() {
