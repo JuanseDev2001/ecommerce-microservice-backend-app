@@ -13,11 +13,11 @@ pipeline {
     // Variables de entorno
     environment {
         BRANCH_NAME = "${env.BRANCH_NAME}"
-        DOCKER_REGISTRY = "your-docker-hub-user" 
-        DOCKER_TLS_VERIFY = ''
-        DOCKER_HOST = ''
-        DOCKER_CERT_PATH = ''
-        MINIKUBE_ACTIVE_DOCKERD = ''
+        DOCKER_REGISTRY = "juanse201" 
+        DOCKER_TLS_VERIFY = '1'
+        DOCKER_HOST = 'tcp://127.0.0.1:55067'
+        DOCKER_CERT_PATH = 'C:\Users\TAURO\.minikube\certs'
+        MINIKUBE_ACTIVE_DOCKERD = 'minikube'
     }
 
     stages {
