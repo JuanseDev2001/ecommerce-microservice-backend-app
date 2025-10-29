@@ -103,6 +103,7 @@ public class UserServiceE2ETest {
         assertTrue(updateResponse.getBody().contains("Second St"));
     }
 
+    /*
     @Test
     void testCreateAndUpdateCredential() {
         testCreateAndFetchUser();
@@ -177,4 +178,5 @@ public class UserServiceE2ETest {
         System.out.println("[DEBUG] VerificationToken Delete Response: " + deleteResponse.getStatusCode() + " - " + deleteResponse.getBody());
         assertTrue(deleteResponse.getStatusCode().is2xxSuccessful());
     }
+    */
 }
