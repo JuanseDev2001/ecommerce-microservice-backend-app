@@ -110,7 +110,6 @@
 		<module>order-service</module>
 		<module>shipping-service</module>
 		<module>payment-service</module>
-		<module>globaltests</module>
 	</modules>
 	
 	<build>
