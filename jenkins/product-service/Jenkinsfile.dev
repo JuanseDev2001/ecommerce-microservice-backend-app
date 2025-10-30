@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    environment {
+        SERVICE_NAME = 'product-service'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir("${SERVICE_NAME}") {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir("${SERVICE_NAME}") {
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+    }
+}
