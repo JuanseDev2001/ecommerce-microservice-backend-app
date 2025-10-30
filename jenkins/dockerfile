@@ -1,0 +1,9 @@
+# Jenkins/Dockerfile
+FROM jenkins/jenkins:lts
+
+# Copy plugin list and install plugins automatically
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# Expose Jenkins web and agent ports
+EXPOSE 8080 50000

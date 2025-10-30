@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven3'
+    }
+
     environment {
         SERVICE_NAME = 'order-service'
     }
@@ -12,20 +16,18 @@ pipeline {
             }
         }
 
+        stage('Debug Maven') {
+            steps {
+                sh 'which mvn || echo "Maven not found"'
+                sh 'mvn --version || echo "Maven command failed"'
+            }
+        }
+
         stage('Test') {
             steps {
                 dir("${SERVICE_NAME}") {
                     sh 'mvn clean test'
                 }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Optional: Archive test results
-            dir("${SERVICE_NAME}") {
-                junit '**/target/surefire-reports/*.xml'
             }
         }
     }

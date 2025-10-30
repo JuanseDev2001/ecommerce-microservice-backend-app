@@ -134,6 +134,34 @@ services:
       - EUREKA_CLIENT_SERVICEURL_MYZONE=http://service-discovery-container:8761/eureka
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery-container:8761/eureka/
       - SPRING_CONFIG_IMPORT=optional:configserver:http://cloud-config-container:9296/
+  
+
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    container_name: jenkins-local
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      # Persistent Jenkins home (plugins, jobs, config)
+      - jenkins_home:/var/jenkins_home
+
+      # Mount host Docker socket (so Jenkins can build images)
+      # ⚠️ On Windows, this only works if you're using WSL2 backend
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Share kubeconfig and Minikube certs
+      - ~/.kube:/root/.kube:ro
+      - ~/.minikube:/root/.minikube:ro
+
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    privileged: true  # Needed for some Docker operations
+
+volumes:
+  jenkins_home:
 
 networks:
   microservices_network:
