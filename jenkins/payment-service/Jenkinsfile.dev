@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven3'
+    }
+
     environment {
         SERVICE_NAME = 'payment-service'
     }
@@ -12,19 +16,19 @@ pipeline {
             }
         }
 
+        stage('Debug Maven') {
+            steps {
+                sh 'which mvn || echo "Maven not found"'
+                sh 'mvn --version || echo "Maven command failed"'
+                sh 'java --version || echo "java command failed"'
+            }
+        }
+
         stage('Test') {
             steps {
                 dir("${SERVICE_NAME}") {
                     sh 'mvn clean test'
                 }
-            }
-        }
-    }
-
-    post {
-        always {
-            dir("${SERVICE_NAME}") {
-                junit '**/target/surefire-reports/*.xml'
             }
         }
     }

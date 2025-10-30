@@ -1,5 +1,5 @@
 # Jenkins/Dockerfile
-FROM jenkins/jenkins:lts
+FROM jenkins/jenkins:lts-jdk17
 
 # Copy plugin list and install plugins automatically
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt

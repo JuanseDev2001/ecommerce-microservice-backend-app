@@ -20,6 +20,7 @@ pipeline {
             steps {
                 sh 'which mvn || echo "Maven not found"'
                 sh 'mvn --version || echo "Maven command failed"'
+                sh 'java --version || echo "java command failed"'
             }
         }
 
