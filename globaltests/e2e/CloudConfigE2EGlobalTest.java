@@ -11,7 +11,7 @@ public class CloudConfigE2EGlobalTest {
     @Test
     void testUserServiceStartsWithConfigFromCloudConfig() {
         RestTemplate restTemplate = new RestTemplate();
-        String config = restTemplate.getForObject("http://localhost:9296/user-service/default", String.class);
+        String config = restTemplate.getForObject("http://cloud-config:9296/user-service/default", String.class);
         assertNotNull(config);
         // Simulate user-service startup using config
         assertTrue(config.contains("spring"));
@@ -21,7 +21,7 @@ public class CloudConfigE2EGlobalTest {
     @Test
     void testOrderServiceStartsWithConfigFromCloudConfig() {
         RestTemplate restTemplate = new RestTemplate();
-        String config = restTemplate.getForObject("http://localhost:9296/order-service/default", String.class);
+        String config = restTemplate.getForObject("http://cloud-config:9296/order-service/default", String.class);
         assertNotNull(config);
         assertTrue(config.contains("spring"));
     }
@@ -30,7 +30,7 @@ public class CloudConfigE2EGlobalTest {
     @Test
     void testProductServiceStartsWithConfigFromCloudConfig() {
         RestTemplate restTemplate = new RestTemplate();
-        String config = restTemplate.getForObject("http://localhost:9296/product-service/default", String.class);
+        String config = restTemplate.getForObject("http://cloud-config:9296/product-service/default", String.class);
         assertNotNull(config);
         assertTrue(config.contains("spring"));
     }
@@ -39,7 +39,7 @@ public class CloudConfigE2EGlobalTest {
     @Test
     void testPaymentServiceStartsWithConfigFromCloudConfig() {
         RestTemplate restTemplate = new RestTemplate();
-        String config = restTemplate.getForObject("http://localhost:9296/payment-service/default", String.class);
+        String config = restTemplate.getForObject("http://cloud-config:9296/payment-service/default", String.class);
         assertNotNull(config);
         assertTrue(config.contains("spring"));
     }
@@ -48,7 +48,7 @@ public class CloudConfigE2EGlobalTest {
     @Test
     void testFavouriteServiceStartsWithConfigFromCloudConfig() {
         RestTemplate restTemplate = new RestTemplate();
-        String config = restTemplate.getForObject("http://localhost:9296/favourite-service/default", String.class);
+        String config = restTemplate.getForObject("http://cloud-config:9296/favourite-service/default", String.class);
         assertNotNull(config);
         assertTrue(config.contains("spring"));
     }

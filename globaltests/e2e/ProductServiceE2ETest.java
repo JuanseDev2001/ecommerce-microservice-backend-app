@@ -23,7 +23,7 @@ public class ProductServiceE2ETest {
     }
 
 
-    private final String baseUrl = "http://localhost:8500/product-service/api/products";
+    private final String baseUrl = "http://product-service:8500/product-service/api/products";
     private final RestTemplate restTemplate = new RestTemplate();
 
     private Integer createdProductId;

@@ -10,6 +10,10 @@ pipeline {
         IMAGE_TAG = "stage"
         S1 = "order-service"
         S2 = "user-service"
+        S3 = "payment-service"
+        S4 = "product-service"
+        S5 = "favourite-service"
+        S6 = "cloud-config"
     }
 
     stages {
@@ -41,6 +45,10 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker pull "${DOCKER_NAME}""${S1}:dev"
                         docker pull "${DOCKER_NAME}""${S2}:dev"
+                        docker pull "${DOCKER_NAME}""${S3}:dev"
+                        docker pull "${DOCKER_NAME}""${S4}:dev"
+                        docker pull "${DOCKER_NAME}""${S5}:dev"
+                        docker pull "${DOCKER_NAME}""${S6}:dev"
                         docker logout
                     '''
                 }
@@ -53,7 +61,11 @@ pipeline {
                 sh '''
                     kubectl apply -f k8/stage/user-service.yaml || true
                     kubectl apply -f k8/stage/order-service.yaml || true
-
+                    kubectl apply -f k8/stage/payment-service.yaml || true
+                    kubectl apply -f k8/stage/product-service.yaml || true
+                    kubectl apply -f k8/stage/favourite-service.yaml || true
+                    kubectl apply -f k8/stage/cloud-config.yaml || true
+                    
                     kubectl get pods
                     kubectl get svc -n default
                 '''
@@ -66,6 +78,11 @@ pipeline {
                 dir('globaltests') {
                     sh 'mvn test -Dtest=OrderServiceE2ETest'
                     sh 'mvn test -Dtest=UserServiceE2ETest'
+                    sh 'mvn test -Dtest=PaymentServiceE2ETest'
+                    sh 'mvn test -Dtest=ProductServiceE2ETest'
+                    sh 'mvn test -Dtest=FavouriteServiceE2ETest'
+                    sh 'mvn test -Dtest=CloudConfigE2ETest'
+                    sh 'mvn test -Dtest=SystemE2ESmokeTest'
                 }
             }
         }
@@ -76,11 +93,23 @@ pipeline {
                     sh '''
                         docker pull "${DOCKER_NAME}""${S1}:dev"
                         docker pull "${DOCKER_NAME}""${S2}:dev"
+                        docker pull "${DOCKER_NAME}""${S3}:dev"
+                        docker pull "${DOCKER_NAME}""${S4}:dev"
+                        docker pull "${DOCKER_NAME}""${S5}:dev"
+                        docker pull "${DOCKER_NAME}""${S6}:dev"
                         docker tag "${DOCKER_NAME}""${S1}:dev" juanse201/order-service-stage
                         docker tag "${DOCKER_NAME}""${S2}:dev" juanse201/user-service-stage
+                        docker tag "${DOCKER_NAME}""${S3}:dev" juanse201/payment-service-stage
+                        docker tag "${DOCKER_NAME}""${S4}:dev" juanse201/product-service-stage
+                        docker tag "${DOCKER_NAME}""${S5}:dev" juanse201/favourite-service-stage
+                        docker tag "${DOCKER_NAME}""${S6}:dev" juanse201/cloud-config-stage
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push juanse201/order-service-stage
                         docker push juanse201/user-service-stage
+                        docker push juanse201/payment-service-stage
+                        docker push juanse201/product-service-stage
+                        docker push juanse201/favourite-service-stage
+                        docker push juanse201/cloud-config-stage
                         docker logout
                     '''
                 }
@@ -92,6 +121,10 @@ pipeline {
                 sh '''
                     kubectl delete -f k8/stage/user-service.yaml || true
                     kubectl delete -f k8/stage/order-service.yaml || true
+                    kubectl delete -f k8/stage/payment-service.yaml || true
+                    kubectl delete -f k8/stage/product-service.yaml || true
+                    kubectl delete -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -f k8/stage/cloud-config.yaml || true
                 '''
             }
         }

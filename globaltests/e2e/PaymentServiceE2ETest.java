@@ -10,8 +10,8 @@ import java.time.format.DateTimeFormatter;
 
 public class PaymentServiceE2ETest {
 
-    private final String orderServiceUrl = "http://localhost:8300/order-service/api/orders";
-    private final String paymentServiceUrl = "http://localhost:8400/payment-service/api/payments";
+    private final String orderServiceUrl = "http://order-service:8300/order-service/api/orders";
+    private final String paymentServiceUrl = "http://payment-service:8400/payment-service/api/payments";
     private final RestTemplate restTemplate = new RestTemplate();
     private static final DateTimeFormatter ORDER_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy__HH:mm:ss:SSSSSS");
 

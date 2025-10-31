@@ -8,27 +8,27 @@ public class SystemE2ESmokeTest {
 
     @Test
     void testUserServiceIsUp() {
-        assertHealth("http://localhost:8700/user-service/actuator/health");
+        assertHealth("http://user-service:8700/user-service/actuator/health");
     }
 
     @Test
     void testProductServiceIsUp() {
-        assertHealth("http://localhost:8500/product-service/actuator/health");
+        assertHealth("http://product-service:8500/product-service/actuator/health");
     }
 
     @Test
     void testOrderServiceIsUp() {
-        assertHealth("http://localhost:8300/order-service/actuator/health");
+        assertHealth("http://order-service:8300/order-service/actuator/health");
     }
 
     @Test
     void testPaymentServiceIsUp() {
-        assertHealth("http://localhost:8400/payment-service/actuator/health");
+        assertHealth("http://payment-service:8400/payment-service/actuator/health");
     }
 
     @Test
     void testFavouriteServiceIsUp() {
-        assertHealth("http://localhost:8800/favourite-service/actuator/health");
+        assertHealth("http://favourite-service:8800/favourite-service/actuator/health");
     }
 
     /*
@@ -46,7 +46,7 @@ public class SystemE2ESmokeTest {
 
     @Test
     void testCloudConfigIsUp() {
-        assertHealth("http://localhost:9296/actuator/health");
+        assertHealth("http://cloud-config:9296/actuator/health");
     }
 
     /*
