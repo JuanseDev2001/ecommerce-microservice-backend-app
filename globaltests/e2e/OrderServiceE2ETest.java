@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class OrderServiceE2ETest {
 
     private final String userServiceUrl = "http://user-service:8700/user-service/api/users";
-    private final String cartServiceUrl = "http://cart-service:8300/order-service/api/carts";
+    private final String cartServiceUrl = "http://order-service:8300/order-service/api/carts";
     private final String orderServiceUrl = "http://order-service:8300/order-service/api/orders";
     private final RestTemplate restTemplate = new RestTemplate();
     private static final DateTimeFormatter ORDER_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy__HH:mm:ss:SSSSSS");
