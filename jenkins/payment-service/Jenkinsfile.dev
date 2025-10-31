@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         SERVICE_NAME = 'payment-service'
-        IMAGE_NAME = '${SERVICE_NAME}:dev'
+        IMAGE_NAME = "juanse201/${SERVICE_NAME}:dev"
     }
 
     stages {
