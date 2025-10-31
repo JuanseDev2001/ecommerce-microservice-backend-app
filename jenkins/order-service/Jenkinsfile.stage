@@ -1,22 +1,69 @@
-pipeline {
+ipeline {
     agent any
-
-    tools {
-        maven 'Maven3'
-    }
 
     environment {
         SERVICE_NAME = 'order-service'
-        IMAGE_NAME = "juanse201/${SERVICE_NAME}:dev"
+        IMAGE_TAG = "pr-${env.CHANGE_ID ?: 'dev'}"  // pr-123 or dev
+        IMAGE_NAME = "juanse201/${SERVICE_NAME}-ecommerce-boot:${IMAGE_TAG}"
     }
 
     stages {
-        stage('Checkout') {
+        // ... Checkout, Test, Build stages ...
+
+        stage('Build & Push Image') {
             steps {
-                checkout scm
+                sh "docker build -t ${IMAGE_NAME} -f ${SERVICE_NAME}/Dockerfile ."
+                withCredentials([usernamePassword(credentialsId: 'docker', ...)]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $IMAGE_NAME
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy Test Slice') {
+            steps {
+                // Update image tag in YAML dynamically
+                sh '''
+                    sed "s|juanse201/order-service-ecommerce-boot:dev|${IMAGE_NAME}|g" k8s/dev/order-service.yaml > /tmp/order.yaml
+                    kubectl apply -f k8s/common/user-service.yaml
+                    kubectl apply -f /tmp/order.yaml
+                '''
+                sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
+            }
+        }
+
+        stage('Run E2E Tests') {
+            steps {
+                dir('globaltests') {
+                    sh 'mvn test -Dtest=OrderServiceE2ETest'
+                }
+            }
+        }
+
+        stage('Promote to Stage') {
+            when {
+                branch 'main'  // or success + main
+            }
+            steps {
+                sh '''
+                    docker pull ${IMAGE_NAME}
+                    docker tag ${IMAGE_NAME} juanse201/order-service-ecommerce-boot:stage
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push juanse201/order-service-ecommerce-boot:stage
+                    docker logout
+                '''
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    kubectl delete -f /tmp/order.yaml || true
+                '''
             }
         }
     }
-
-    
 }
