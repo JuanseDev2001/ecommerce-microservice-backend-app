@@ -6,8 +6,8 @@ pipeline {
     }
 
     environment {
-        SERVICE_NAME = 'product-service'
-        IMAGE_NAME = '${SERVICE_NAME}:dev'
+        SERVICE_NAME = 'order-service'
+        IMAGE_NAME = "${SERVICE_NAME}:dev"
     }
 
     stages {
@@ -23,19 +23,6 @@ pipeline {
                 sh 'which mvn || echo "Maven not found"'
                 sh 'mvn --version || echo "Maven command failed"'
                 sh 'java --version || echo "java command failed"'
-                sh 'echo "--------------------------------------------"'
-                sh 'grep docker /etc/group'
-                sh '''
-                    echo "Current user: $(whoami)"
-                    echo "Groups: $(groups)"
-                    echo "Docker version (if accessible):"
-                    if docker info > /dev/null 2>&1; then
-                        docker version
-                        echo "Docker socket is accessible ✅"
-                    else
-                        echo "Docker socket is NOT accessible ❌"
-                    fi
-                '''
             }
         }
 
@@ -51,15 +38,15 @@ pipeline {
             steps {
                 dir("${SERVICE_NAME}") {
                     sh 'mvn clean package -DskipTests'
-                    sh 'ls -l target/'
                 }
             }
         }
 
        stage('Build Docker Image') {
             steps {
-                    // Build from workspace root (.), using Dockerfile from service dir
-                    sh "docker build -t ${IMAGE_NAME} -f ${SERVICE_NAME}/Dockerfile ."
+                dir("${SERVICE_NAME}") {
+                    sh "docker build -t ${IMAGE_NAME} ."
+                }
             }
         }
         
@@ -76,3 +63,5 @@ pipeline {
         }
     }
 }
+
+kubectl exec -it jenkins-c5ff74544-sr85j -- sh

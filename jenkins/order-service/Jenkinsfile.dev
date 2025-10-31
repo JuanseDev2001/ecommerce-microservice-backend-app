@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         SERVICE_NAME = 'order-service'
+        IMAGE_NAME = '${SERVICE_NAME}:dev'
     }
 
     stages {
@@ -18,9 +19,23 @@ pipeline {
 
         stage('Debug Maven') {
             steps {
+                sh 'docker --version'
                 sh 'which mvn || echo "Maven not found"'
                 sh 'mvn --version || echo "Maven command failed"'
                 sh 'java --version || echo "java command failed"'
+                sh 'echo "--------------------------------------------"'
+                sh 'grep docker /etc/group'
+                sh '''
+                    echo "Current user: $(whoami)"
+                    echo "Groups: $(groups)"
+                    echo "Docker version (if accessible):"
+                    if docker info > /dev/null 2>&1; then
+                        docker version
+                        echo "Docker socket is accessible ✅"
+                    else
+                        echo "Docker socket is NOT accessible ❌"
+                    fi
+                '''
             }
         }
 
@@ -36,18 +51,28 @@ pipeline {
             steps {
                 dir("${SERVICE_NAME}") {
                     sh 'mvn clean package -DskipTests'
+                    sh 'ls -l target/'
                 }
             }
         }
 
-        stage('Build Docker Image') {
+       stage('Build Docker Image') {
             steps {
-                dir("${SERVICE_NAME}") {
-                    sh "docker build -t ${IMAGE_TAG} ."
+                    // Build from workspace root (.), using Dockerfile from service dir
+                    sh "docker build -t ${IMAGE_NAME} -f ${SERVICE_NAME}/Dockerfile ."
+            }
+        }
+        
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $IMAGE_NAME
+                        docker logout
+                    '''
                 }
             }
         }
-
-        
     }
 }
