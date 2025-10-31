@@ -6,10 +6,10 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceE2ETest {
-    private final String userServiceUrl = "http://localhost:8700/user-service/api/users";
-    private final String credentialServiceUrl = "http://localhost:8700/user-service/api/credentials";
-    private final String addressServiceUrl = "http://localhost:8700/user-service/api/address";
-    private final String verificationTokenServiceUrl = "http://localhost:8700/user-service/api/verificationTokens";
+    private final String userServiceUrl = "http://user-service:8700/user-service/api/users";
+    private final String credentialServiceUrl = "http://user-service:8700/user-service/api/credentials";
+    private final String addressServiceUrl = "http://user-service:8700/user-service/api/address";
+    private final String verificationTokenServiceUrl = "http://user-service:8700/user-service/api/verificationTokens";
     private final RestTemplate restTemplate = new RestTemplate();
 
     private int createdUserId;
