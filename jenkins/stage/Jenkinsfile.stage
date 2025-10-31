@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'Maven3'
+    }
 
     environment {
         DOCKER_NAME = "juanse201/"
@@ -14,6 +18,8 @@ pipeline {
         stage('check versions'){
             steps {
                  sh 'kubectl version'
+                 sh 'which mvn || echo "Maven not found"'
+                 sh 'mvn --version || echo "Maven command failed"'
                  sh '''
                     echo "Current user: $(whoami)"
                     echo "Groups: $(groups)"
@@ -43,11 +49,13 @@ pipeline {
 
         stage('Deploy Test Slice') {
             steps {
+                // Update image tag in YAML dynamically
                 sh '''
                     kubectl apply -f k8/stage/user-service.yaml || true
                     kubectl apply -f k8/stage/order-service.yaml || true
 
                     kubectl get pods
+                    kubectl get svc -n default
                 '''
                 sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
             }
