@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        SERVICE_NAME = 'product-service'
+        SERVICE_NAME = 'payment-service'
         IMAGE_NAME = '${SERVICE_NAME}:dev'
     }
 
