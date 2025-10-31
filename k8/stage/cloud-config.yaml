@@ -18,7 +18,7 @@ spec:
           image: juanse201/cloud-config:dev
           imagePullPolicy: Always
           ports:
-            - containerPort: 8300
+            - containerPort: 9296
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
@@ -34,7 +34,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8300
-      targetPort: 8300
+    - port: 9296
+      targetPort: 9296
   selector:
     app: cloud-config

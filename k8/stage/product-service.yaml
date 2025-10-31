@@ -18,7 +18,7 @@ spec:
           image: juanse201/product-service:dev
           imagePullPolicy: Always
           ports:
-            - containerPort: 8300
+            - containerPort: 8500
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
@@ -36,7 +36,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8300
-      targetPort: 8300
+    - port: 8500
+      targetPort: 8500
   selector:
     app: product-service

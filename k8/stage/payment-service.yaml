@@ -18,7 +18,7 @@ spec:
           image: juanse201/payment-service:dev
           imagePullPolicy: Always
           ports:
-            - containerPort: 8300
+            - containerPort: 8400
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
@@ -36,7 +36,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8300
-      targetPort: 8300
+    - port: 8400
+      targetPort: 8400
   selector:
     app: payment-service
