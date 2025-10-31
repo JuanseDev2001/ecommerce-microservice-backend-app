@@ -4,10 +4,8 @@ pipeline {
     environment {
         DOCKER_NAME = "juanse201/"
         IMAGE_TAG = "stage"
-        SERVICES = [
-            'order-service',
-            'user-service'
-        ]
+        S1 = "order-service"
+        S2 = "user-service"
     }
 
     stages {
@@ -18,10 +16,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker pull "${DOCKER_NAME}""${SERVICES[0]}:dev"
-                        docker pull "${DOCKER_NAME}""${SERVICES[1]}:dev"
-                        minikube image load "${DOCKER_NAME}""${SERVICES[0]}:dev"
-                        minikube image load "${DOCKER_NAME}""${SERVICES[1]}:dev"
+                        docker pull "${DOCKER_NAME}""${S1}:dev"
+                        docker pull "${DOCKER_NAME}""${S2}:dev"
+                        minikube image load "${DOCKER_NAME}""${S1}:dev"
+                        minikube image load "${DOCKER_NAME}""${S2}:dev"
                         minikube images
                         docker logout
                     '''
@@ -55,10 +53,10 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        docker pull "${DOCKER_NAME}""${SERVICES[0]}:dev"
-                        docker pull "${DOCKER_NAME}""${SERVICES[1]}:dev"
-                        docker tag "${DOCKER_NAME}""${SERVICES[0]}:dev" juanse201/order-service-stage
-                        docker tag "${DOCKER_NAME}""${SERVICES[1]}:dev" juanse201/user-service-stage
+                        docker pull "${DOCKER_NAME}""${S1}:dev"
+                        docker pull "${DOCKER_NAME}""${S2}:dev"
+                        docker tag "${DOCKER_NAME}""${S1}:dev" juanse201/order-service-stage
+                        docker tag "${DOCKER_NAME}""${S2}:dev" juanse201/user-service-stage
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push juanse201/order-service-stage
                         docker push juanse201/user-service-stage
