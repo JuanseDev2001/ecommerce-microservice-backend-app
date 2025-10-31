@@ -15,7 +15,7 @@ spec:
       containers:
         - name: order-service
           # This will be overridden by Jenkins with actual tag (e.g., pr-123)
-          image: juanse201/order-service-ecommerce-boot:dev
+          image: juanse201/order-service:dev
           ports:
             - containerPort: 8300
           env:

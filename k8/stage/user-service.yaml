@@ -15,7 +15,7 @@ spec:
       containers:
         - name: user-service
           # This will be overridden by Jenkins with actual tag (e.g., pr-123)
-          image: juanse201/user-service-ecommerce-boot:dev
+          image: juanse201/user-service:dev
           ports:
             - containerPort: 8700
           env:
