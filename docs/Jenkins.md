@@ -13,6 +13,9 @@ docker-compose down jenkins
 minkube start
 
 #if any pods are up
+
+kubectl get pods
+
 kubectl delete deployment jenkins
 
 minikube image load ecommerce-microservice-backend-app-jenkins:latest
