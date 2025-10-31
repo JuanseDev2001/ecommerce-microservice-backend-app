@@ -16,6 +16,7 @@ spec:
         - name: user-service
           # This will be overridden by Jenkins with actual tag (e.g., pr-123)
           image: juanse201/user-service:dev
+          imagePullPolicy: Always
           ports:
             - containerPort: 8700
           env:
