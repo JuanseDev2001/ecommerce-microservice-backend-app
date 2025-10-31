@@ -18,9 +18,6 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker pull "${DOCKER_NAME}""${S1}:dev"
                         docker pull "${DOCKER_NAME}""${S2}:dev"
-                        minikube image load "${DOCKER_NAME}""${S1}:dev"
-                        minikube image load "${DOCKER_NAME}""${S2}:dev"
-                        minikube images
                         docker logout
                     '''
                 }
@@ -31,6 +28,7 @@ pipeline {
             steps {
                 // Update image tag in YAML dynamically
                 sh '''
+                    kubectl version
                     kubectl apply -f k8s/common/user-service.yaml || true
                     kubectl apply -f k8s/common/order-service.yaml || true
 

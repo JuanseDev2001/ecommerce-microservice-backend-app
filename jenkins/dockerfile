@@ -10,6 +10,14 @@ RUN apt-get update && \
 # Add jenkins to docker group if it exists, else create it
 RUN if ! getent group docker; then groupadd -g 999 docker; fi && \
     usermod -aG docker jenkins
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
+    ln -s /usr/local/bin/kubectl /usr/bin/kubectl && \
+    rm kubectl
+
 USER jenkins
 
 # Copy plugin list and install plugins automatically
