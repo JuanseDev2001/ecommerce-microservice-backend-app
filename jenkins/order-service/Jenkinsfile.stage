@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+    }
+
+    environment {
+        SERVICE_NAME = 'order-service'
+        IMAGE_NAME = "juanse201/${SERVICE_NAME}:dev"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+    }
+
+    
+}
