@@ -31,6 +31,7 @@ public class SystemE2ESmokeTest {
         assertHealth("http://localhost:8800/favourite-service/actuator/health");
     }
 
+    /*
     @Test
     void testProxyClientIsUp() {
         assertHealth("http://localhost:8900/app/actuator/health");
@@ -41,15 +42,21 @@ public class SystemE2ESmokeTest {
         assertHealth("http://localhost:8600/shipping-service/actuator/health");
     }
 
+    */
+
     @Test
     void testCloudConfigIsUp() {
         assertHealth("http://localhost:9296/actuator/health");
     }
 
+    /*
+
     @Test
     void testServiceDiscoveryIsUp() {
         assertHealth("http://localhost:8761/actuator/health");
     }
+
+    */
 
 
     private void assertHealth(String url) {

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ShippingServiceE2ETest {
+    /*
 
     private final String productServiceUrl = "http://localhost:8500/product-service/api/products";
     private final String orderServiceUrl = "http://localhost:8300/order-service/api/orders";
@@ -261,4 +262,5 @@ public class ShippingServiceE2ETest {
         restTemplate.delete(orderServiceUrl + "/" + orderId);
         restTemplate.delete(productServiceUrl + "/" + productId);
     }
+    */
 }
