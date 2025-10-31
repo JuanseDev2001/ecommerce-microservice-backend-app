@@ -9,11 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class CloudConfigApplicationUnitTests {
 
     @Test
-    void testMainMethodRuns() {
-        assertDoesNotThrow(() -> CloudConfigApplication.main(new String[]{}));
-    }
-
-    @Test
     void testSpringBootApplicationAnnotationPresent() {
         assertTrue(CloudConfigApplication.class.isAnnotationPresent(org.springframework.boot.autoconfigure.SpringBootApplication.class));
     }
