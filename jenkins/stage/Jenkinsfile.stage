@@ -10,6 +10,23 @@ pipeline {
 
     stages {
         // ... Checkout, Test, Build stages ...
+        
+        stage('check versions'){
+            steps {
+                 sh 'kubectl version'
+                 sh '''
+                    echo "Current user: $(whoami)"
+                    echo "Groups: $(groups)"
+                    echo "Docker version (if accessible):"
+                    if docker info > /dev/null 2>&1; then
+                        docker version
+                        echo "Docker socket is accessible ✅"
+                    else
+                        echo "Docker socket is NOT accessible ❌"
+                    fi
+                '''
+            }
+        }
 
         stage('Build & Push Image') {
             steps {
@@ -26,11 +43,9 @@ pipeline {
 
         stage('Deploy Test Slice') {
             steps {
-                // Update image tag in YAML dynamically
                 sh '''
-                    kubectl version
-                    kubectl apply -f k8s/common/user-service.yaml || true
-                    kubectl apply -f k8s/common/order-service.yaml || true
+                    kubectl apply -f k8/stage/user-service.yaml || true
+                    kubectl apply -f k8/stage/order-service.yaml || true
 
                     kubectl get pods
                 '''
@@ -67,8 +82,8 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    kubectl delete -f k8s/common/user-service.yaml || true
-                    kubectl delete -f k8s/common/order-service.yaml || true
+                    kubectl delete -f k8/stage/user-service.yaml || true
+                    kubectl delete -f k8/stage/order-service.yaml || true
                 '''
             }
         }
