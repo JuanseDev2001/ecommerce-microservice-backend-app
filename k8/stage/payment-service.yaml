@@ -42,7 +42,7 @@ spec:
               value: "8400"
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /payment-service/actuator/health
               port: 8400
             initialDelaySeconds: 10
             periodSeconds: 5
