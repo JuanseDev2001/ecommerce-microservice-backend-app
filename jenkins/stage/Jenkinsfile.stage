@@ -1,15 +1,59 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'Maven3'
+    }
 
     environment {
         DOCKER_NAME = "juanse201/"
         IMAGE_TAG = "stage"
         S1 = "order-service"
         S2 = "user-service"
+        S3 = "payment-service"
+        S4 = "product-service"
+        S5 = "favourite-service"
+        S6 = "cloud-config"
+        S7 = "service-discovery"
+        S8 = "zipkin"
     }
 
     stages {
+
+        stage('Pre-Cleanup') {
+            steps {
+                sh '''
+                    kubectl delete -f k8/stage/user-service.yaml || true
+                    kubectl delete -f k8/stage/order-service.yaml || true
+                    kubectl delete -f k8/stage/payment-service.yaml || true
+                    kubectl delete -f k8/stage/product-service.yaml || true
+                    kubectl delete -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -f k8/stage/service-discovery.yaml || true
+                    kubectl delete -f k8/stage/zipkin.yaml || true
+                '''
+            }
+        }
         // ... Checkout, Test, Build stages ...
+        
+        stage('check versions'){
+            steps {
+                 sh 'kubectl version'
+                 sh 'which mvn || echo "Maven not found"'
+                 sh 'mvn --version || echo "Maven command failed"'
+                 sh '''
+                    echo "Current user: $(whoami)"
+                    echo "Groups: $(groups)"
+                    echo "Docker version (if accessible):"
+                    if docker info > /dev/null 2>&1; then
+                        docker version
+                        echo "Docker socket is accessible ✅"
+                    else
+                        echo "Docker socket is NOT accessible ❌"
+                    fi
+                '''
+            }
+        }
 
         stage('Build & Push Image') {
             steps {
@@ -18,9 +62,11 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker pull "${DOCKER_NAME}""${S1}:dev"
                         docker pull "${DOCKER_NAME}""${S2}:dev"
-                        minikube image load "${DOCKER_NAME}""${S1}:dev"
-                        minikube image load "${DOCKER_NAME}""${S2}:dev"
-                        minikube images
+                        docker pull "${DOCKER_NAME}""${S3}:dev"
+                        docker pull "${DOCKER_NAME}""${S4}:dev"
+                        docker pull "${DOCKER_NAME}""${S5}:dev"
+                        docker pull "${DOCKER_NAME}""${S6}:dev"
+                        docker pull "${DOCKER_NAME}""${S7}:dev"
                         docker logout
                     '''
                 }
@@ -31,12 +77,30 @@ pipeline {
             steps {
                 // Update image tag in YAML dynamically
                 sh '''
-                    kubectl apply -f k8s/common/user-service.yaml || true
-                    kubectl apply -f k8s/common/order-service.yaml || true
-
+                    kubectl apply -f k8/stage/user-service.yaml || true
+                    kubectl apply -f k8/stage/order-service.yaml || true
+                    kubectl apply -f k8/stage/payment-service.yaml || true
+                    kubectl apply -f k8/stage/product-service.yaml || true
+                    kubectl apply -f k8/stage/favourite-service.yaml || true
+                    kubectl apply -f k8/stage/cloud-config.yaml || true
+                    kubectl apply -f k8/stage/service-discovery.yaml || true
+                    kubectl apply -f k8/stage/zipkin.yaml || true
+                    
                     kubectl get pods
+                    kubectl get svc -n default
                 '''
                 sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
+                sh 'sleep 10'
+            }
+        }
+        
+        stage('Debug Eureka Registration') {
+            steps {
+                sh 'kubectl get pods'
+                sh 'kubectl get svc'
+                sh 'kubectl logs deployment/service-discovery || true'
+                sh 'kubectl logs deployment/order-service || true'
+                sh 'kubectl logs deployment/payment-service || true'
             }
         }
 
@@ -45,6 +109,11 @@ pipeline {
                 dir('globaltests') {
                     sh 'mvn test -Dtest=OrderServiceE2ETest'
                     sh 'mvn test -Dtest=UserServiceE2ETest'
+                    sh 'mvn test -Dtest=PaymentServiceE2ETest'
+                    sh 'mvn test -Dtest=ProductServiceE2ETest'
+                    sh 'mvn test -Dtest=FavouriteServiceE2ETest'
+                    sh 'mvn test -Dtest=CloudConfigE2ETest'
+                    sh 'mvn test -Dtest=SystemE2ESmokeTest'
                 }
             }
         }
@@ -55,11 +124,26 @@ pipeline {
                     sh '''
                         docker pull "${DOCKER_NAME}""${S1}:dev"
                         docker pull "${DOCKER_NAME}""${S2}:dev"
+                        docker pull "${DOCKER_NAME}""${S3}:dev"
+                        docker pull "${DOCKER_NAME}""${S4}:dev"
+                        docker pull "${DOCKER_NAME}""${S5}:dev"
+                        docker pull "${DOCKER_NAME}""${S6}:dev"
+                        docker pull "${DOCKER_NAME}""${S7}:dev"
                         docker tag "${DOCKER_NAME}""${S1}:dev" juanse201/order-service-stage
                         docker tag "${DOCKER_NAME}""${S2}:dev" juanse201/user-service-stage
+                        docker tag "${DOCKER_NAME}""${S3}:dev" juanse201/payment-service-stage
+                        docker tag "${DOCKER_NAME}""${S4}:dev" juanse201/product-service-stage
+                        docker tag "${DOCKER_NAME}""${S5}:dev" juanse201/favourite-service-stage
+                        docker tag "${DOCKER_NAME}""${S6}:dev" juanse201/cloud-config-stage
+                        docker tag "${DOCKER_NAME}""${S7}:dev" juanse201/service-discovery-stage
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push juanse201/order-service-stage
                         docker push juanse201/user-service-stage
+                        docker push juanse201/payment-service-stage
+                        docker push juanse201/product-service-stage
+                        docker push juanse201/favourite-service-stage
+                        docker push juanse201/cloud-config-stage
+                        docker push juanse201/service-discovery-stage
                         docker logout
                     '''
                 }
@@ -69,8 +153,14 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    kubectl delete -f k8s/common/user-service.yaml || true
-                    kubectl delete -f k8s/common/order-service.yaml || true
+                    kubectl delete -f k8/stage/user-service.yaml || true
+                    kubectl delete -f k8/stage/order-service.yaml || true
+                    kubectl delete -f k8/stage/payment-service.yaml || true
+                    kubectl delete -f k8/stage/product-service.yaml || true
+                    kubectl delete -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -f k8/stage/service-discovery.yaml || true
+                    kubectl delete -f k8/stage/zipkin.yaml || true
                 '''
             }
         }

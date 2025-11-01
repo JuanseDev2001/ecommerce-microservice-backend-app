@@ -11,9 +11,9 @@ import java.time.format.DateTimeFormatter;
 
 public class FavouriteServiceE2ETest {
 
-    private final String baseUrl = "http://localhost:8800/favourite-service/api/favourites";
-    private final String userServiceUrl = "http://localhost:8700/user-service/api/users";
-    private final String productServiceUrl = "http://localhost:8500/product-service/api/products";
+    private final String baseUrl = "http://favourite-service:8800/favourite-service/api/favourites";
+    private final String userServiceUrl = "http://user-service:8700/user-service/api/users";
+    private final String productServiceUrl = "http://product-service:8500/product-service/api/products";
 
     private final RestTemplate restTemplate = new RestTemplate();
     private static final DateTimeFormatter FAVOURITE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy__HH:mm:ss:SSSSSS");

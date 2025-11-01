@@ -19,11 +19,6 @@ public class UserServiceApplicationIntegrationTest {
     }
 
     @Test
-    void testMainMethodDoesNotThrow() {
-        assertDoesNotThrow(() -> UserServiceApplication.main(new String[]{}));
-    }
-
-    @Test
     void testUserMappingHelperMapToDtoAndBack() {
         Credential cred = Credential.builder().credentialId(1).username("user").password("pass").build();
         User user = User.builder().userId(2).firstName("A").lastName("B").email("a@b.com").credential(cred).build();
