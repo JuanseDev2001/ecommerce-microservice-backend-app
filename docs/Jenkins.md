@@ -44,11 +44,11 @@ minikube ssh "sudo chgrp 102 /var/run/docker.sock"
 
 kubectl exec -it jenkins-c5ff74544-4tk4m -- cat /var/jenkins_home/secrets/initialAdminPassword
 
-kubectl exec -it order-service-79d6bdd778-xp7ft -- nslookup service-discovery
-kubectl exec -it order-service-79d6bdd778-xp7ft -- nslookup cloud-config
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- nslookup service-discovery
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- nslookup cloud-config
 
-kubectl exec -it order-service-79d6bdd778-xp7ft -- curl -s http://service-discovery:8761/eureka/
-kubectl exec -it order-service-79d6bdd778-xp7ft -- curl -s http://cloud-config:9296/
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- curl -s http://service-discovery:8761/eureka/
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- curl -s http://cloud-config:9296/
 
-kubectl exec -it order-service-79d6bdd778-xp7ft -- printenv | grep EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-kubectl exec -it order-service-79d6bdd778-xp7ft -- printenv | grep SPRING_CONFIG_IMPORT
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- printenv | grep EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+kubectl exec -it order-service-6d6985d89b-jl2r5 -- printenv | grep SPRING_CONFIG_IMPORT
