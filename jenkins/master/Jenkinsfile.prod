@@ -22,15 +22,16 @@ pipeline {
 
         stage('Pre-Cleanup') {
             steps {
+                sh 'kubectl get namespace prod || kubectl create namespace prod'
                 sh '''
-                    kubectl delete -f k8/master/user-service.yaml || true
-                    kubectl delete -f k8/master/order-service.yaml || true
-                    kubectl delete -f k8/master/payment-service.yaml || true
-                    kubectl delete -f k8/master/product-service.yaml || true
-                    kubectl delete -f k8/master/favourite-service.yaml || true
-                    kubectl delete -f k8/master/cloud-config.yaml || true
-                    kubectl delete -f k8/master/service-discovery.yaml || true
-                    kubectl delete -f k8/master/zipkin.yaml || true
+                    kubectl delete -n prod -f k8/master/user-service.yaml || true
+                    kubectl delete -n prod -f k8/master/order-service.yaml || true
+                    kubectl delete -n prod -f k8/master/payment-service.yaml || true
+                    kubectl delete -n prod -f k8/master/product-service.yaml || true
+                    kubectl delete -n prod -f k8/master/favourite-service.yaml || true
+                    kubectl delete -n prod -f k8/master/cloud-config.yaml || true
+                    kubectl delete -n prod -f k8/master/service-discovery.yaml || true
+                    kubectl delete -n prod -f k8/master/zipkin.yaml || true
                 '''
             }
         }
@@ -77,14 +78,14 @@ pipeline {
             steps {
                 // Update image tag in YAML dynamically
                 sh '''
-                    kubectl apply -f k8/master/user-service.yaml || true
-                    kubectl apply -f k8/master/order-service.yaml || true
-                    kubectl apply -f k8/master/payment-service.yaml || true
-                    kubectl apply -f k8/master/product-service.yaml || true
-                    kubectl apply -f k8/master/favourite-service.yaml || true
-                    kubectl apply -f k8/master/cloud-config.yaml || true
-                    kubectl apply -f k8/master/service-discovery.yaml || true
-                    kubectl apply -f k8/master/zipkin.yaml || true
+                    kubectl apply -n prod -f k8/master/user-service.yaml || true
+                    kubectl apply -n prod -f k8/master/order-service.yaml || true
+                    kubectl apply -n prod -f k8/master/payment-service.yaml || true
+                    kubectl apply -n prod -f k8/master/product-service.yaml || true
+                    kubectl apply -n prod -f k8/master/favourite-service.yaml || true
+                    kubectl apply -n prod -f k8/master/cloud-config.yaml || true
+                    kubectl apply -n prod -f k8/master/service-discovery.yaml || true
+                    kubectl apply -n prod -f k8/master/zipkin.yaml || true
 
                     kubectl get pods
                     kubectl get svc -n default
