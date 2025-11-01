@@ -22,7 +22,6 @@ pipeline {
 
         stage('Pre-Cleanup') {
             steps {
-                sh 'kubectl get namespace stage || kubectl create namespace stage'
                 sh '''
                     kubectl delete -n stage -f k8/stage/user-service.yaml || true
                     kubectl delete -n stage -f k8/stage/order-service.yaml || true

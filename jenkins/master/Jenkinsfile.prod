@@ -22,7 +22,6 @@ pipeline {
 
         stage('Pre-Cleanup') {
             steps {
-                sh 'kubectl get namespace prod || kubectl create namespace prod'
                 sh '''
                     kubectl delete -n prod -f k8/master/user-service.yaml || true
                     kubectl delete -n prod -f k8/master/order-service.yaml || true
@@ -61,13 +60,13 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker pull "${DOCKER_NAME}""${S1}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S2}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S3}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S4}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S5}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S6}-stage:dev"
-                        docker pull "${DOCKER_NAME}""${S7}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S1}-stage"
+                        docker pull "${DOCKER_NAME}""${S2}-stage"
+                        docker pull "${DOCKER_NAME}""${S3}-stage"
+                        docker pull "${DOCKER_NAME}""${S4}-stage"
+                        docker pull "${DOCKER_NAME}""${S5}-stage"
+                        docker pull "${DOCKER_NAME}""${S6}-stage"
+                        docker pull "${DOCKER_NAME}""${S7}-stage"
                         docker logout
                     '''
                 }
