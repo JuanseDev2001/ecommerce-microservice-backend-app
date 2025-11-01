@@ -1,0 +1,96 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven3'
+    }
+
+    environment {
+        DOCKER_NAME = "juanse201/"
+        IMAGE_TAG = "stage"
+        S1 = "order-service"
+        S2 = "user-service"
+        S3 = "payment-service"
+        S4 = "product-service"
+        S5 = "favourite-service"
+        S6 = "cloud-config"
+        S7 = "service-discovery"
+        S8 = "zipkin"
+    }
+
+    stages {
+
+        stage('Pre-Cleanup') {
+            steps {
+                sh '''
+                    kubectl delete -f k8/master/user-service.yaml || true
+                    kubectl delete -f k8/master/order-service.yaml || true
+                    kubectl delete -f k8/master/payment-service.yaml || true
+                    kubectl delete -f k8/master/product-service.yaml || true
+                    kubectl delete -f k8/master/favourite-service.yaml || true
+                    kubectl delete -f k8/master/cloud-config.yaml || true
+                    kubectl delete -f k8/master/service-discovery.yaml || true
+                    kubectl delete -f k8/master/zipkin.yaml || true
+                '''
+            }
+        }
+        // ... Checkout, Test, Build stages ...
+        
+        stage('check versions'){
+            steps {
+                 sh 'kubectl version'
+                 sh 'which mvn || echo "Maven not found"'
+                 sh 'mvn --version || echo "Maven command failed"'
+                 sh '''
+                    echo "Current user: $(whoami)"
+                    echo "Groups: $(groups)"
+                    echo "Docker version (if accessible):"
+                    if docker info > /dev/null 2>&1; then
+                        docker version
+                        echo "Docker socket is accessible ✅"
+                    else
+                        echo "Docker socket is NOT accessible ❌"
+                    fi
+                '''
+            }
+        }
+
+        stage('Build & Push Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker pull "${DOCKER_NAME}""${S1}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S2}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S3}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S4}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S5}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S6}-stage:dev"
+                        docker pull "${DOCKER_NAME}""${S7}-stage:dev"
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy Test Slice') {
+            steps {
+                // Update image tag in YAML dynamically
+                sh '''
+                    kubectl apply -f k8/master/user-service.yaml || true
+                    kubectl apply -f k8/master/order-service.yaml || true
+                    kubectl apply -f k8/master/payment-service.yaml || true
+                    kubectl apply -f k8/master/product-service.yaml || true
+                    kubectl apply -f k8/master/favourite-service.yaml || true
+                    kubectl apply -f k8/master/cloud-config.yaml || true
+                    kubectl apply -f k8/master/service-discovery.yaml || true
+                    kubectl apply -f k8/master/zipkin.yaml || true
+
+                    kubectl get pods
+                    kubectl get svc -n default
+                '''
+                sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
+            }
+        }
+    }
+}
