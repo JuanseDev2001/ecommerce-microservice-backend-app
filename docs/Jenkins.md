@@ -46,6 +46,13 @@ minikube ssh "sudo chgrp 102 /var/run/docker.sock"
 kubectl create namespace stage
 kubectl create namespace prod
 
+#And give jenkins permission to access and use this namespaces
+
+kubectl create rolebinding jenkins-prod-admin `
+  --clusterrole=admin `
+  --serviceaccount=default:jenkins `
+  --namespace=prod
+
 
 kubectl exec -it jenkins-c5ff74544-4tk4m -- cat /var/jenkins_home/secrets/initialAdminPassword
 
