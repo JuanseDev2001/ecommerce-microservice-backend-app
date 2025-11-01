@@ -23,14 +23,14 @@ pipeline {
         stage('Pre-Cleanup') {
             steps {
                 sh '''
-                    kubectl delete -f k8/stage/user-service.yaml || true
-                    kubectl delete -f k8/stage/order-service.yaml || true
-                    kubectl delete -f k8/stage/payment-service.yaml || true
-                    kubectl delete -f k8/stage/product-service.yaml || true
-                    kubectl delete -f k8/stage/favourite-service.yaml || true
-                    kubectl delete -f k8/stage/cloud-config.yaml || true
-                    kubectl delete -f k8/stage/service-discovery.yaml || true
-                    kubectl delete -f k8/stage/zipkin.yaml || true
+                    kubectl delete -n stage -f k8/stage/user-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/order-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/payment-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/product-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -n stage -f k8/stage/service-discovery.yaml || true
+                    kubectl delete -n stage -f k8/stage/zipkin.yaml || true
                 '''
             }
         }
@@ -77,15 +77,15 @@ pipeline {
             steps {
                 // Update image tag in YAML dynamically
                 sh '''
-                    kubectl apply -f k8/stage/user-service.yaml || true
-                    kubectl apply -f k8/stage/order-service.yaml || true
-                    kubectl apply -f k8/stage/payment-service.yaml || true
-                    kubectl apply -f k8/stage/product-service.yaml || true
-                    kubectl apply -f k8/stage/favourite-service.yaml || true
-                    kubectl apply -f k8/stage/cloud-config.yaml || true
-                    kubectl apply -f k8/stage/service-discovery.yaml || true
-                    kubectl apply -f k8/stage/zipkin.yaml || true
-                    
+                    kubectl apply -n stage -f k8/stage/user-service.yaml || true
+                    kubectl apply -n stage -f k8/stage/order-service.yaml || true
+                    kubectl apply -n stage -f k8/stage/payment-service.yaml || true
+                    kubectl apply -n stage -f k8/stage/product-service.yaml || true
+                    kubectl apply -n stage -f k8/stage/favourite-service.yaml || true
+                    kubectl apply -n stage -f k8/stage/cloud-config.yaml || true
+                    kubectl apply -n stage -f k8/stage/service-discovery.yaml || true
+                    kubectl apply -n stage -f k8/stage/zipkin.yaml || true
+
                     kubectl get pods
                     kubectl get svc -n default
                 '''
@@ -153,14 +153,14 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    kubectl delete -f k8/stage/user-service.yaml || true
-                    kubectl delete -f k8/stage/order-service.yaml || true
-                    kubectl delete -f k8/stage/payment-service.yaml || true
-                    kubectl delete -f k8/stage/product-service.yaml || true
-                    kubectl delete -f k8/stage/favourite-service.yaml || true
-                    kubectl delete -f k8/stage/cloud-config.yaml || true
-                    kubectl delete -f k8/stage/service-discovery.yaml || true
-                    kubectl delete -f k8/stage/zipkin.yaml || true
+                    kubectl delete -n stage -f k8/stage/user-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/order-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/payment-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/product-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -n stage -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -n stage -f k8/stage/service-discovery.yaml || true
+                    kubectl delete -n stage -f k8/stage/zipkin.yaml || true
                 '''
             }
         }
