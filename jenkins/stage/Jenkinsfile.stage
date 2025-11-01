@@ -39,6 +39,20 @@ pipeline {
             }
         }
 
+        stage('Pre-Cleanup') {
+            steps {
+                sh '''
+                    kubectl delete -f k8/stage/user-service.yaml || true
+                    kubectl delete -f k8/stage/order-service.yaml || true
+                    kubectl delete -f k8/stage/payment-service.yaml || true
+                    kubectl delete -f k8/stage/product-service.yaml || true
+                    kubectl delete -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -f k8/stage/service-discovery.yaml || true
+                '''
+            }
+        }
+
         stage('Build & Push Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -73,6 +87,16 @@ pipeline {
                     kubectl get svc -n default
                 '''
                 sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
+            }
+        }
+        
+        stage('Debug Eureka Registration') {
+            steps {
+                sh 'kubectl get pods'
+                sh 'kubectl get svc'
+                sh 'kubectl logs deployment/service-discovery || true'
+                sh 'kubectl logs deployment/order-service || true'
+                sh 'kubectl logs deployment/payment-service || true'
             }
         }
 
