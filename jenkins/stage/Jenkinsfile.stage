@@ -18,6 +18,20 @@ pipeline {
     }
 
     stages {
+
+        stage('Pre-Cleanup') {
+            steps {
+                sh '''
+                    kubectl delete -f k8/stage/user-service.yaml || true
+                    kubectl delete -f k8/stage/order-service.yaml || true
+                    kubectl delete -f k8/stage/payment-service.yaml || true
+                    kubectl delete -f k8/stage/product-service.yaml || true
+                    kubectl delete -f k8/stage/favourite-service.yaml || true
+                    kubectl delete -f k8/stage/cloud-config.yaml || true
+                    kubectl delete -f k8/stage/service-discovery.yaml || true
+                '''
+            }
+        }
         // ... Checkout, Test, Build stages ...
         
         stage('check versions'){
