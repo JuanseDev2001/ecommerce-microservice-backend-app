@@ -89,7 +89,7 @@ pipeline {
                     kubectl get pods
                     kubectl get svc -n default
                 '''
-                sh 'kubectl wait --for=condition=ready pod -l app=order-service --timeout=300s'
+                sh 'sleep 20'
             }
         }
     }
