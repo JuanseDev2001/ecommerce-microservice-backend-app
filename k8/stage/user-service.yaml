@@ -25,9 +25,9 @@ spec:
             - name: SPRING_ZIPKIN_BASE_URL
               value: "http://zipkin:9411"
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-              value: "http://service-discovery-container:8761/eureka/"
+              value: "http://service-discovery:8761/eureka/"
             - name: SPRING_CONFIG_IMPORT
-              value: "optional:configserver:http://cloud-config-container:9296/"
+              value: "optional:configserver:http://cloud-config:9296/"
             - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
               value: "true"
             - name: EUREKA_CLIENT_FETCH_REGISTRY
@@ -37,7 +37,7 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: EUREKA_INSTANCE_HOSTNAME
-              value: "user-service-container"
+              value: "user-service"
             - name: EUREKA_INSTANCE_NON_SECURE_PORT
               value: "8700"
           readinessProbe:
