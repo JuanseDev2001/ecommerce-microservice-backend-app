@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CloudConfigE2EGlobalTest {
+public class CloudConfigE2ETest {
 
 
     @Test
