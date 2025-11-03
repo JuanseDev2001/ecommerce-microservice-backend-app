@@ -118,6 +118,22 @@ pipeline {
             }
         }
 
+        stage ('Run Performance Tests') {
+            steps {
+                dir('globaltests/rendimiento') {
+                    sh '''
+                        # Make script executable
+                        chmod +x run_tests.sh
+                        
+                        # Run performance tests
+                        ./run_tests.sh
+                    '''
+                }
+                // Archive the performance test reports
+                archiveArtifacts artifacts: 'globaltests/rendimiento/reports/**/*', allowEmptyArchive: true
+            }
+        }
+
         stage('Promote to Stage') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
