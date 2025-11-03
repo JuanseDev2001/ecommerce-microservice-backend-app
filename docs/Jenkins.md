@@ -4,6 +4,9 @@ root
 
 docker-compose build --no-cache jenkins
 
+#inside jenkins folder updates docker desktop image
+docker build -t ecommerce-microservice-backend-app-jenkins:latest .
+
 #to get image faster
 docker-compose up -d jenkins
 docker-compose down jenkins
