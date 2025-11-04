@@ -39,7 +39,7 @@ pipeline {
         stage('check versions'){
             steps {
                  sh 'kubectl version'
-                 sh 'python --version'
+                 sh 'python3 --version || echo "Python not found"'
                  sh 'which mvn || echo "Maven not found"'
                  sh 'mvn --version || echo "Maven command failed"'
                  sh '''
@@ -74,24 +74,28 @@ pipeline {
             }
         }
 
-        stage('Deploy Test Slice') {
+        stage('Deploy Infrastructure Services') {
             steps {
-                // Update image tag in YAML dynamically
                 sh '''
-                    kubectl apply -f k8/stage/user-service.yaml || true
-                    kubectl apply -f k8/stage/order-service.yaml || true
-                    kubectl apply -f k8/stage/payment-service.yaml || true
-                    kubectl apply -f k8/stage/product-service.yaml || true
-                    kubectl apply -f k8/stage/favourite-service.yaml || true
-                    kubectl apply -f k8/stage/cloud-config.yaml || true
-                    kubectl apply -f k8/stage/service-discovery.yaml || true
-                    kubectl apply -f k8/stage/zipkin.yaml || true
-
-                    kubectl get pods
-                    kubectl get svc -n default
+                    kubectl apply -f k8/stage/zipkin.yaml
+                    kubectl apply -f k8/stage/cloud-config.yaml
+                    kubectl apply -f k8/stage/service-discovery.yaml
+                    kubectl wait --for=condition=ready pod -l app=service-discovery --timeout=300s
+                    sleep 30  # Esperar a que Eureka esté completamente operativo
                 '''
-                sh 'kubectl wait --for=condition=ready pod -l app=order-service -n stage --timeout=300s'
-                sh 'sleep 10'
+            }
+        }
+        
+        stage('Deploy Business Services') {
+            steps {
+                sh '''
+                    kubectl apply -f k8/stage/user-service.yaml
+                    kubectl apply -f k8/stage/product-service.yaml
+                    kubectl apply -f k8/stage/payment-service.yaml
+                    kubectl apply -f k8/stage/favourite-service.yaml
+                    kubectl apply -f k8/stage/order-service.yaml
+                    kubectl wait --for=condition=ready pod --all --timeout=300s
+                '''
             }
         }
         
@@ -130,8 +134,6 @@ pipeline {
                         ./run_tests.sh
                     '''
                 }
-                // Archive the performance test reports
-                archiveArtifacts artifacts: 'globaltests/rendimiento/reports/**/*', allowEmptyArchive: true
             }
         }
 
