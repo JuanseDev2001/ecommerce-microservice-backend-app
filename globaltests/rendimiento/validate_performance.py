@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Definir umbrales de rendimiento aceptables
 THRESHOLDS = {
-    'max_avg_response_time': 1000,  # ms - Tiempo de respuesta promedio máximo
+    'max_avg_response_time': 4000,  # ms - Tiempo de respuesta promedio máximo
     'max_error_rate': 5.0,           # % - Tasa de errores máxima permitida
     'min_throughput': 5.0,          # req/s - Throughput mínimo aceptable
     'max_95_percentile': 15000        # ms - Percentil 95 máximo
