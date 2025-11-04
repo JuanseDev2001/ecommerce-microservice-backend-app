@@ -41,9 +41,9 @@ echo -e "\nValidando métricas de rendimiento..."
 python3 validate_performance.py
 
 if [ $? -ne 0 ]; then
-    echo -e "\n❌ Las pruebas de rendimiento NO cumplieron con los umbrales establecidos."
+    echo -e "\nLas pruebas de rendimiento NO cumplieron con los umbrales establecidos."
     exit 1
 else
-    echo -e "\n✅ Todas las métricas de rendimiento están dentro de los umbrales aceptables."
+    echo -e "\nTodas las métricas de rendimiento están dentro de los umbrales aceptables."
     exit 0
 fi
