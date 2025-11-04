@@ -92,5 +92,19 @@ pipeline {
                 sh 'sleep 20'
             }
         }
+
+        stage('Generate Release Notes') {
+            steps {
+                sh """
+                    chmod +x release-notes/generate-release-notes.sh
+                    ./release-notes/generate-release-notes.sh \
+                        \${BUILD_NUMBER} \
+                        production \
+                        ${S1} ${S2} ${S3} ${S4} \
+                        ${S5} ${S6} ${S7} ${S8}
+                """
+                archiveArtifacts artifacts: 'release-notes/RELEASE-*.md', fingerprint: true
+            }
+        }
     }
 }
