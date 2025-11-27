@@ -35,12 +35,33 @@ resilience4j:
         sliding-window-type: COUNT_BASED
 
 management:
-  health:
-    circuitbreakers:
-      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,loggers,threaddump,heapdump
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}
+  health:
+    circuitbreakers:
+      enabled: true
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
 
 
 
