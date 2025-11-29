@@ -74,6 +74,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                // Example for Maven projects
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
+                }
+            }
+            }
+
         stage('Deploy Infrastructure Services') {
             steps {
                 sh '''
