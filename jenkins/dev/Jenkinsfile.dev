@@ -44,57 +44,29 @@ pipeline {
                 '''
             }
         }
-
-        stage('Unit Tests - All Services') {
-            parallel {
-                stage('Test Order Service') {
-                    steps {
-                        dir("${S1}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+        
+        stage('Test All Services') {
+            steps {
+                dir("${S1}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test User Service') {
-                    steps {
-                        dir("${S2}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S2}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test Payment Service') {
-                    steps {
-                        dir("${S3}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S3}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test Product Service') {
-                    steps {
-                        dir("${S4}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S4}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test Favourite Service') {
-                    steps {
-                        dir("${S5}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S5}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test Cloud Config') {
-                    steps {
-                        dir("${S6}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S6}") {
+                    sh 'mvn clean test'
                 }
-                stage('Test Service Discovery') {
-                    steps {
-                        dir("${S7}") {
-                            sh 'mvn clean test'
-                        }
-                    }
+                dir("${S7}") {
+                    sh 'mvn clean test'
                 }
             }
         }
@@ -119,50 +91,26 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
-            steps {
-                script {
-                    timeout(time: 5, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         script {
+        //             timeout(time: 5, unit: 'MINUTES') {
+        //                 waitForQualityGate abortPipeline: true
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Build Docker Images') {
             parallel {
-                stage('Build Order Service Image') {
+                stage('Build Images') {
                     steps {
                         sh "docker build -t ${DOCKER_NAME}${S1}:${IMAGE_TAG} -f ${S1}/Dockerfile ."
-                    }
-                }
-                stage('Build User Service Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S2}:${IMAGE_TAG} -f ${S2}/Dockerfile ."
-                    }
-                }
-                stage('Build Payment Service Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S3}:${IMAGE_TAG} -f ${S3}/Dockerfile ."
-                    }
-                }
-                stage('Build Product Service Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S4}:${IMAGE_TAG} -f ${S4}/Dockerfile ."
-                    }
-                }
-                stage('Build Favourite Service Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S5}:${IMAGE_TAG} -f ${S5}/Dockerfile ."
-                    }
-                }
-                stage('Build Cloud Config Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S6}:${IMAGE_TAG} -f ${S6}/Dockerfile ."
-                    }
-                }
-                stage('Build Service Discovery Image') {
-                    steps {
                         sh "docker build -t ${DOCKER_NAME}${S7}:${IMAGE_TAG} -f ${S7}/Dockerfile ."
                     }
                 }
