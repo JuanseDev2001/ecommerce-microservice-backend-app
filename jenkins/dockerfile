@@ -27,6 +27,9 @@ RUN apt-get update && \
 # Install Locust globally
 RUN pip3 install --break-system-packages locust
 
+# Install Trivy for container vulnerability scanning
+RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.0
+
 USER jenkins
 
 # Copy plugin list and install plugins automatically
