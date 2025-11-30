@@ -1,3 +1,5 @@
+#docker-compose
+version: '3'
 services:
   zipkin:
     image: openzipkin/zipkin
