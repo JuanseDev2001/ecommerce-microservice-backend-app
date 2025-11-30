@@ -74,7 +74,7 @@ All that you want to do is just fire up your IDE **->** open or import the paren
 
 ## Data Model
 ### Entity-Relationship-Diagram
-![System Boundary](ecommerce-ERD.drawio.png)
+![System Boundary](ecommerce-ERD.drawio.png) 
 
 ## Playing With e-Commerce-boot Project
 

@@ -13,7 +13,7 @@ docker-compose down jenkins
 
 #kubernets / minikube
 
-minkube start
+minikube start
 
 #if any pods are up
 
