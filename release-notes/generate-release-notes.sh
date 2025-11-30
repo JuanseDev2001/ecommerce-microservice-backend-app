@@ -24,8 +24,8 @@ get_version() {
     # Prioridad 2: Último tag de Git
     local git_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
     if [ -n "$git_tag" ]; then
-        # Remover 'v' si existe al inicio
-        echo "${git_tag#v}"
+        # Remover 'v-' del inicio (mantener formato con guión en archivos)
+        echo "${git_tag#v-}"
         return
     fi
     

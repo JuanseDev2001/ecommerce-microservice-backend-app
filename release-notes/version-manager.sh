@@ -13,8 +13,9 @@ NC='\033[0m'
 
 # Obtener la versión actual desde Git tags
 get_current_version() {
-    local latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-    echo "${latest_tag#v}"
+    local latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v-0.0.0")
+    # Remover 'v-' del inicio (mantener formato con guión)
+    echo "${latest_tag#v-}"
 }
 
 # Incrementar versión según tipo
@@ -88,15 +89,21 @@ echo -e "${YELLOW}¿Deseas crear el tag v${NEW_VERSION}? (y/n)${NC}"
 read -r response
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
-    git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
-    echo -e "${GREEN}Tag v${NEW_VERSION} creado${NC}"
-    echo -e "${BLUE}Para pushear el tag: git push origin v${NEW_VERSION}${NC}"
+    # Crear tag con formato v-X.Y.Z (con guión)
+    git tag -a "v-${NEW_VERSION}" -m "Release v-${NEW_VERSION}"
+    echo -e "${GREEN}Tag v-${NEW_VERSION} creado${NC}"
+    echo -e "${BLUE}Para pushear el tag: git push origin v-${NEW_VERSION}${NC}"
     echo ""
     echo -e "${YELLOW}¿Deseas generar las release notes ahora? (y/n)${NC}"
     read -r gen_notes
     
     if [[ "$gen_notes" =~ ^[Yy]$ ]]; then
-        ./release-notes/generate-release-notes.sh "${NEW_VERSION}" "production"
+        # Corregir ruta cuando se ejecuta desde release-notes/
+        if [ -f "./generate-release-notes.sh" ]; then
+            ./generate-release-notes.sh "${NEW_VERSION}" "production"
+        else
+            ../release-notes/generate-release-notes.sh "${NEW_VERSION}" "production"
+        fi
     fi
 else
     echo -e "${YELLOW}Tag no creado${NC}"

@@ -1,0 +1,21 @@
+# Example terraform.tfvars for dev environment
+# Copy this to terraform.tfvars and update with your values
+# DO NOT commit terraform.tfvars to Git
+
+# GCP Configuration
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+zone       = "us-central1-a"
+app_name   = "ecommerce"
+
+# DigitalOcean Configuration
+do_token   = "your-digitalocean-api-token"  # Get from: https://cloud.digitalocean.com/account/api/tokens
+do_region  = "nyc1"
+
+# Jenkins Configuration
+jenkins_droplet_size   = "s-2vcpu-4gb"
+jenkins_admin_user     = "admin"
+jenkins_admin_password = "change-me-to-strong-password"
+
+# SSH Key (generate with: ssh-keygen -t rsa -b 4096 -C "jenkins@ecommerce")
+ssh_public_key = "ssh-rsa AAAAB3... your-email@example.com"
