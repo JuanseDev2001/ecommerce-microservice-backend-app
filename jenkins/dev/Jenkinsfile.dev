@@ -117,6 +117,23 @@ pipeline {
             }
         }
 
+        stage('Trivy Security Scan') {
+            steps {
+                script {
+                    echo 'Scanning Docker images for vulnerabilities with Trivy...'
+                    sh '''
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S1}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S1}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S2}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S2}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S3}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S3}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S4}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S4}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S5}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S5}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S6}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S6}"
+                        trivy image --severity HIGH,CRITICAL ${DOCKER_NAME}${S7}:${IMAGE_TAG} || echo "Vulnerabilities found in ${S7}"
+                    '''
+                }
+            }
+        }
+
         stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
