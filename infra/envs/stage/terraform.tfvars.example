@@ -1,0 +1,11 @@
+# Example terraform.tfvars for stage environment
+# Copy this file to terraform.tfvars and fill in your values
+# DO NOT commit terraform.tfvars to version control
+
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+zone       = "us-central1-a"
+app_name   = "ecommerce"
+
+# Generate a strong password for Jenkins admin
+jenkins_admin_password = "change-me-to-a-strong-password"

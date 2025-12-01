@@ -1,0 +1,48 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'ecommerce-dev'
+    environment: 'development'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - '/etc/prometheus/alert.rules.yml'
+
+scrape_configs:
+  # Product Service
+  - job_name: 'product-service'
+    metrics_path: '/product-service/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - 'ecommerce-microservice-backend-app-product-service-container-1:8500'
+        labels:
+          application: 'product-service'
+          environment: 'dev'
+  
+  # Order Service
+  - job_name: 'order-service'
+    metrics_path: '/order-service/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - 'ecommerce-microservice-backend-app-order-service-container-1:8300'
+        labels:
+          application: 'order-service'
+          environment: 'dev'
+  
+  # Payment Service
+  - job_name: 'payment-service'
+    metrics_path: '/payment-service/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - 'ecommerce-microservice-backend-app-payment-service-container-1:8400'
+        labels:
+          application: 'payment-service'
+          environment: 'dev'

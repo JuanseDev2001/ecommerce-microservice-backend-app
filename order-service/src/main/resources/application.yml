@@ -33,24 +33,104 @@ resilience4j:
         sliding-window-size: 10
         wait-duration-in-open-state: 5s
         sliding-window-type: COUNT_BASED
+  
+  # Bulkhead Pattern Configuration
+  bulkhead:
+    instances:
+      orderProcessing:
+        max-concurrent-calls: 10
+        max-wait-duration: 0ms
+      highPriorityOrders:
+        max-concurrent-calls: 5
+        max-wait-duration: 0ms
+  
+  thread-pool-bulkhead:
+    instances:
+      orderAsyncProcessing:
+        max-thread-pool-size: 5
+        core-thread-pool-size: 3
+        queue-capacity: 20
+        keep-alive-duration: 20ms
+  
+  # Retry Pattern Configuration
+  retry:
+    instances:
+      orderProcessing:
+        max-attempts: 3
+        wait-duration: 1000ms
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+          - org.springframework.web.client.HttpServerErrorException
+      
+      externalApiCall:
+        max-attempts: 5
+        wait-duration: 500ms
+        exponential-backoff-multiplier: 1.5
+        enable-exponential-backoff: true
+
+# Feature Toggle Configuration
+features:
+  environment: ${SPRING_PROFILES_ACTIVE:dev}
+  toggles:
+    new-checkout-flow:
+      enabled: true
+      rollout-percentage: 50
+      description: "New optimized checkout flow with fewer steps"
+      enabled-environments:
+        - dev
+        - stage
+    
+    advanced-order-analytics:
+      enabled: true
+      rollout-percentage: 10
+      description: "Advanced analytics and insights for orders"
+      enabled-users:
+        - admin@example.com
+    
+    order-retry-mechanism:
+      enabled: true
+      rollout-percentage: 100
+      description: "Automatic retry for failed order processing"
+    
+    bulk-order-processing:
+      enabled: true
+      rollout-percentage: 25
+      description: "Process multiple orders in a single transaction"
+      enabled-environments:
+        - dev
+    
+    real-time-inventory:
+      enabled: false
+      rollout-percentage: 0
+      description: "Real-time inventory updates (experimental)"
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,circuitbreakerevents
-  health:
-    circuitbreakers:
-      enabled: true
+        include: health,info,metrics,prometheus,env,loggers,threaddump,heapdump,refresh,features
   endpoint:
     health:
       show-details: always
-
-
-
-
-
-
-
-
-
+      probes:
+        enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}
+  health:
+    circuitbreakers:
+      enabled: true
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
