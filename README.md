@@ -66,7 +66,7 @@ The following are the initially required software pieces:
 
 Follow the installation guide for each software website link and check your software versions from the command line to verify that they are all installed correctly.
 
-## Using an IDE
+## Using an IDE 
 
 I recommend that you work with your Java code using an IDE that supports the development of Spring Boot applications such as Spring Tool Suite or IntelliJ IDEA Ultimate Edition. So you can use the Spring Boot Dashboard to run the services, run each microservice test case, and many more.
 
