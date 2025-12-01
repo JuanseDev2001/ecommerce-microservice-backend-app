@@ -31,7 +31,7 @@ Este directorio contiene la documentación técnica del proyecto organizada por 
    - Configuración de CI/CD
    - Pipelines y automatización
 
-4. **DockerImages.md**
+4. **DockerImages.md** 
    - Imágenes Docker utilizadas
    - Versionamiento
 
