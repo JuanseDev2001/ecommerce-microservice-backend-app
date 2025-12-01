@@ -3,7 +3,25 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# Environment variables and secrets
 .env
+*.tfvars
+!*.tfvars.example
+
+# Terraform files
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/*.tfplan
+
+# Keys and credentials
+infra/keys/
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
 
 ### STS ###
 .apt_generated
@@ -32,3 +50,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## Keys ##
+infra/keys/
