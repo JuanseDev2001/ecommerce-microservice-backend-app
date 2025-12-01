@@ -551,6 +551,7 @@ BREAKING CHANGE: new API    → major
 | `GUIA_JENKINS.md` | Guía de configuración de Jenkins |
 | `GUIA_KUBERNETES.md` | Guía para correr el proyecto con Minikube |
 | `INFORME_FINAL_PROYECTO.md` | Este informe |
+| `metodologia-agil-scrum.md` | Documentación de metodologia agil |
 | `OBSERVABILIDAD.md` | Stack de monitoreo completo |
 | `PATRONES_DISEÑO.md` | Patrones existentes e implementados |
 | `PipelineLogic.md` | Lógica de pipelines |
