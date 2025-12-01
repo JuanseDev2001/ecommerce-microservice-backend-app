@@ -1,0 +1,158 @@
+# Docker Compose para Stack de Observabilidad (versión ligera)
+# Solo incluye los servicios de observabilidad y 3 microservicios de ejemplo
+
+services:
+  # ===== MICROSERVICIOS DE EJEMPLO (solo 3) =====
+
+  product-service-container:
+    image: juanse201/product-service-ecommerce-boot:0.1.0
+    ports:
+      - 8500:8500
+    networks:
+      - microservices_network
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_ZIPKIN_BASE-URL=http://jaeger:9411
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  order-service-container:
+    image: juanse201/order-service-ecommerce-boot:0.1.0
+    ports:
+      - 8300:8300
+    networks:
+      - microservices_network
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_ZIPKIN_BASE-URL=http://jaeger:9411
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  payment-service-container:
+    image: juanse201/payment-service-ecommerce-boot:0.1.0
+    ports:
+      - 8400:8400
+    networks:
+      - microservices_network
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_ZIPKIN_BASE-URL=http://jaeger:9411
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  # ===== STACK DE OBSERVABILIDAD =====
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9091:9090" # Changed to 9091 to avoid port conflict
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    networks:
+      - microservices_network
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - microservices_network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - microservices_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "9411:9411" # Zipkin compatible endpoint
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    networks:
+      - microservices_network
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m" # Reducido para ahorrar memoria
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - microservices_network
+    restart: unless-stopped
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.1
+    container_name: logstash
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    volumes:
+      - ./elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m" # Reducido para ahorrar memoria
+      - "PIPELINE_WORKERS=1"
+    networks:
+      - microservices_network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - microservices_network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:
+  elasticsearch-data:
+
+
+networks:
+  microservices_network:
+    driver: bridge
